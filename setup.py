@@ -27,7 +27,7 @@ setup(
     ],
     python_requires=">=3.7",
     install_requires=[
-        "googletrans==4.0.0-rc1",
+        "googletrans @ git+https://github.com/michsethowusu/py-googletrans",
         "pandas>=1.3.0",
         "click>=8.0.0",
     ],
