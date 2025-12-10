@@ -130,24 +130,3 @@ class TestTerminex(unittest.TestCase):
 
 if __name__ == '__main__':
     unittest.main()
-```
-
-Now you have all the essential files! Your complete directory structure should look like this:
-```
-terminex/
-├── terminex/
-│   ├── __init__.py              ← YES, you need this!
-│   ├── translator.py
-│   ├── glossary_manager.py
-│   └── utils.py
-├── glossaries/
-│   └── agric_terms_twi.csv
-├── tests/
-│   └── test_translator.py
-├── examples/
-│   └── basic_usage.py
-├── requirements.txt
-├── setup.py
-├── README.md
-├── .gitignore
-└── LICENSE
