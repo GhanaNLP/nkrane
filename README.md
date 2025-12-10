@@ -19,7 +19,7 @@ Terminex wraps Google Translate API with terminology substitution capabilities. 
 ```bash
 # Clone the repository
 git clone https://github.com/yourusername/tc-translator.git
-cd tc-translatora
+cd tc-translator
 
 # Install dependencies
 pip install -r requirements.txt
