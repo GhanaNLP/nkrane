@@ -27,7 +27,7 @@ pip install git+https://github.com/GhanaNLP/ghana-translator.git
 
 ```python
 import asyncio
-from ghana_translator import TCTranslator
+from tc_translate import TCTranslator
 
 async def main():
     translator = TCTranslator(target_lang='ak')  # 'ak' is the Google code for Twi
@@ -58,7 +58,7 @@ id,term,translation
 ### Example terminology files:
 - `terminologies_twi.csv` - for Twi terminology
 - `terminologies_ewe.csv` - for Ewe terminology  
-- `terminologies_ak.csv` - for Akan terminology (using Google's language code)
+- `terminologies_gaa.csv` - for Ga terminology
 
 ## Language Code Support
 
@@ -76,40 +76,6 @@ translator = TCTranslator(target_lang='twi')
 translator = TCTranslator(target_lang='ak')  # 'ak' is Google's code for Akan/Twi
 ```
 
-### Supported Language Codes:
-- `twi` or `ak` - Twi/Akan
-- `ewe` or `ee` - Ewe
-- `gaa` - Ga
-- `dag` - Dagbani
-- `fan` - Fante
-- And many more Ghanaian languages
-
-## Advanced Usage
-
-### Using a custom terminology file location:
-```python
-translator = TCTranslator(
-    target_lang='twi',
-    terminology_csv='path/to/your/terminologies_twi.csv'
-)
-```
-
-### Getting detailed translation information:
-```python
-result = translator.translate("The farmer works on the farm.")
-print(f"Original: {result['original']}")
-print(f"Translation: {result['text']}")
-print(f"Intermediate Thai: {result['intermediate_thai']}")
-print(f"Terms replaced: {result['replacements_count']}")
-```
-
-### Batch translation:
-```python
-texts = ["Hello world", "Good morning", "Thank you"]
-results = translator.batch_translate_sync(texts)
-for text, result in zip(texts, results):
-    print(f"{text} → {result['text']}")
-```
 
 ## Creating Terminology Files
 
