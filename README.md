@@ -126,5 +126,3 @@ id,term,translation
 3,abattoir,aboa kum fie
 4,acreage,asase kɛse
 ```
-
-```
