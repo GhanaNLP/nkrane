@@ -1,4 +1,4 @@
-# Nkrane Translator
+# Nkrane
 
 A Python package that extends Google Translate and other MT models with terminology control and augmentation to enhance translation quality.  
 
