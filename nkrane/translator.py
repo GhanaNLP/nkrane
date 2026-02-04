@@ -1,4 +1,4 @@
-# nkrane/translator.py
+# nkrane_gt/translator.py
 import asyncio
 import logging
 from typing import Dict, Any, Optional
@@ -12,20 +12,26 @@ logger = logging.getLogger(__name__)
 
 class NkraneTranslator:
     def __init__(self, target_lang: str, src_lang: str = 'en', 
-                 terminology_source: str = None):
+                 terminology_source: str = None, use_builtin: bool = True):
         """
         Initialize Nkrane Translator.
         
         Args:
-            target_lang: Target language code (e.g., 'twi' or 'ak')
+            target_lang: Target language code (e.g., 'ak', 'ee', 'gaa')
             src_lang: Source language code (default: 'en')
-            terminology_source: Path to terminology CSV file or directory (optional)
+            terminology_source: Path to user's terminology CSV file (optional)
+            use_builtin: Whether to use built-in dictionary (default: True)
         """
         self.target_lang = target_lang
         self.src_lang = src_lang
+        self.use_builtin = use_builtin
         
         # Initialize terminology manager
-        self.terminology_manager = TerminologyManager(terminology_source)
+        self.terminology_manager = TerminologyManager(
+            target_lang=target_lang,
+            user_csv_path=terminology_source,
+            use_builtin=use_builtin
+        )
         
         # Convert language codes to Google format
         self.src_lang_google = convert_lang_code(src_lang, to_google=True)
@@ -37,6 +43,11 @@ class NkraneTranslator:
         
         if not is_google_supported(target_lang):
             logger.warning(f"Target language '{target_lang}' may not be supported by Google Translate")
+        
+        # Log terminology stats
+        stats = self.terminology_manager.get_terms_count()
+        logger.info(f"Terminology loaded: {stats['total']} total terms "
+                   f"({stats['builtin']} built-in, {stats['user']} user)")
     
     async def _translate_async(self, text: str, **kwargs) -> Dict[str, Any]:
         """
@@ -49,7 +60,7 @@ class NkraneTranslator:
         Returns:
             Dictionary with translation results
         """
-        # Step 1: Preprocess - replace noun phrases with IDs
+        # Step 1: Preprocess - replace noun phrases with placeholders
         preprocessed_text, replacements, original_cases = self.terminology_manager.preprocess_text(text)
         
         logger.debug(f"Preprocessed text: {preprocessed_text}")
@@ -67,7 +78,7 @@ class NkraneTranslator:
                 
                 translated_with_placeholders = google_result.text
                 
-                # Step 3: Postprocess - replace IDs with translations
+                # Step 3: Postprocess - replace placeholders with translations
                 final_text = self.terminology_manager.postprocess_text(
                     translated_with_placeholders,
                     replacements,
@@ -84,7 +95,7 @@ class NkraneTranslator:
                     'replacements_count': len(replacements),
                     'src_google': self.src_lang_google,
                     'dest_google': self.target_lang_google,
-                    'replaced_terms': list(replacements.values())
+                    'replaced_terms': list(replacements.keys())
                 }
                 
         except Exception as e:
