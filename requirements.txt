@@ -1,4 +1,3 @@
-git+https://github.com/michsethowusu/py-googletrans
 pandas>=1.3.0
 spacy>=3.0.0
 aiohttp>=3.8.0
