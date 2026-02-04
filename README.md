@@ -26,21 +26,6 @@ Standard machine translation often struggles with:
 
 ---
 
-## 🚀 Features
-
-| Feature | Description |
-|---------|-------------|
-| **Terminology Control** | Enforce specific translations for key terms |
-| **Built-in Dictionaries** | Pre-loaded with 400K+ terms for Akan (Twi) |
-| **Stopword Handling** | Intelligently leaves stopwords ("a", "the", "of") for natural translation |
-| **Case Preservation** | Matches capitalization of original text |
-| **Custom Dictionaries** | Load your own CSV terminology files |
-| **Batch Translation** | Translate multiple texts efficiently |
-| **CLI Interface** | Command-line tool for quick translations |
-| **Noun Phrase Extraction** | Uses spaCy for intelligent phrase detection |
-
----
-
 ## 📦 Installation
 
 ### From Source
