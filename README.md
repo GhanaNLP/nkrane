@@ -3,7 +3,7 @@
 [![Python 3.7+](https://img.shields.io/badge/python-3.7+-blue.svg)](https://www.python.org/downloads/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
-Nkrane - Google Translate (nkrane-gt) is a Python library that enhances the googletrans python library with terminology control for low-resource languages, with a focus on Ghanaian and languages.
+Nkrane - Google Translate (nkrane-gt) is a Python library that enhances the googletrans python library with terminology control for low-resource languages, with a focus on Ghanaian languages.
 
 It solves the problem of inconsistent translations for critical terms by allowing you to enforce specific translations for nouns and noun phrases while letting Google Translate handle the grammatical structure.
 
