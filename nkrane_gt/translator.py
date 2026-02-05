@@ -12,7 +12,7 @@ logger = logging.getLogger(__name__)
 
 class NkraneTranslator:
     def __init__(self, target_lang: str, src_lang: str = 'en', 
-                 terminology_source: str = None, use_builtin: bool = True,
+                 terminology_source: str = None, use_builtin: bool = False,
                  use_pivot: bool = True, pivot_lang: str = 'th'):
         """
         Initialize Nkrane Translator.
@@ -20,8 +20,8 @@ class NkraneTranslator:
         Args:
             target_lang: Target language code (e.g., 'ak', 'ee', 'gaa')
             src_lang: Source language code (default: 'en')
-            terminology_source: Path to user's terminology CSV file (optional)
-            use_builtin: Whether to use built-in dictionary (default: True)
+            terminology_source: Path to user's terminology CSV file (required for terminology control)
+            use_builtin: Whether to use built-in dictionary (default: False)
             use_pivot: Whether to use pivot translation (default: True)
             pivot_lang: Pivot language code (default: 'th' for Thai)
         """
@@ -55,8 +55,11 @@ class NkraneTranslator:
 
         # Log terminology stats
         stats = self.terminology_manager.get_terms_count()
-        logger.info(f"Terminology loaded: {stats['total']} total terms "
-                   f"({stats['builtin']} built-in, {stats['user']} user)")
+        if stats['total'] > 0:
+            logger.info(f"Terminology loaded: {stats['total']} total terms "
+                       f"({stats['builtin']} built-in, {stats['user']} user)")
+        else:
+            logger.info("No terminology loaded - translations will use Google Translate directly")
         
         if use_pivot:
             logger.info(f"Using pivot translation: {src_lang} → {pivot_lang} → {target_lang}")
