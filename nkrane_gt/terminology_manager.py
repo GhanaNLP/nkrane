@@ -302,6 +302,7 @@ class TerminologyManager:
         all_replacements = {}
         all_original_cases = {}
         processed_sentences = []
+        placeholder_counter = 1  # MOVED OUTSIDE - shared across all sentences
 
         for sent_idx, sentence in enumerate(sentences):
             if not sentence.strip():
@@ -333,7 +334,7 @@ class TerminologyManager:
             preprocessed_sentence = sentence
             sentence_replacements = {}
             sentence_original_cases = {}
-            placeholder_counter = 1
+            # placeholder_counter removed from here - now shared across sentences
 
             for phrase in matching_phrases:
                 phrase_lower = phrase['text'].lower()
