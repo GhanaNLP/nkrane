@@ -1,12 +1,10 @@
 # nkrane_gt/terminology_manager.py
 import os
 import csv
-import pickle
 import re
 import spacy
 from typing import Dict, List, Tuple, Optional, Set
 from dataclasses import dataclass
-import importlib.resources
 
 # Load spaCy model for English
 try:
@@ -25,76 +23,19 @@ class Term:
     source: str  # 'builtin' or 'user'
 
 class TerminologyManager:
-    def __init__(self, target_lang: str, user_csv_path: str = None, use_builtin: bool = True):
+    def __init__(self, target_lang: str, user_csv_path: str = None):
         """
         Initialize terminology manager.
 
         Args:
             target_lang: Target language code (ak, ee, gaa)
             user_csv_path: Path to user's CSV file (optional)
-            use_builtin: Whether to use built-in dictionary (default: True)
         """
         self.target_lang = target_lang
         self.terms = {}  # Dictionary: english_term -> translation
-        self.sources = {}  # Dictionary: english_term -> source
-
-        if use_builtin:
-            self._load_builtin_terms()
 
         if user_csv_path:
             self._load_user_terms(user_csv_path)
-
-    def _load_builtin_terms(self):
-        """Load built-in terms from pickle file."""
-        try:
-            # Determine which built-in file to load
-            if self.target_lang == 'ak':
-                pkl_name = 'nouns_ak.pkl'
-            elif self.target_lang == 'ee':
-                pkl_name = 'nouns_ee.pkl'
-            elif self.target_lang == 'gaa':
-                pkl_name = 'nouns_gaa.pkl'
-            else:
-                print(f"Warning: No built-in dictionary for language '{self.target_lang}'")
-                return
-
-            # Load from package data using importlib.resources
-            try:
-                # First try to load as package resource
-                with importlib.resources.files('nkrane_gt.data').joinpath(pkl_name).open('rb') as f:
-                    builtin_dict = pickle.load(f)
-                    print(f"Loaded {len(builtin_dict)} built-in terms for {self.target_lang}")
-
-                    # Add built-in terms
-                    for english_term, translation in builtin_dict.items():
-                        english_term_lower = english_term.lower()
-                        self.terms[english_term_lower] = translation
-                        self.sources[english_term_lower] = 'builtin'
-
-            except (FileNotFoundError, ModuleNotFoundError):
-                # Fallback to direct file path
-                current_dir = os.path.dirname(__file__)
-                pkl_path = os.path.join(current_dir, 'data', pkl_name)
-
-                if os.path.exists(pkl_path):
-                    with open(pkl_path, 'rb') as f:
-                        builtin_dict = pickle.load(f)
-                    print(f"Loaded {len(builtin_dict)} built-in terms for {self.target_lang}")
-
-                    # Add built-in terms
-                    for english_term, translation in builtin_dict.items():
-                        english_term_lower = english_term.lower()
-                        self.terms[english_term_lower] = translation
-                        self.sources[english_term_lower] = 'builtin'
-                else:
-                    print(f"Warning: Built-in dictionary not found: {pkl_path}")
-                    # Create empty dictionary if file doesn't exist
-                    with open(pkl_path, 'wb') as f:
-                        pickle.dump({}, f)
-                    print(f"Created empty dictionary at: {pkl_path}")
-
-        except Exception as e:
-            print(f"Error loading built-in dictionary: {e}")
 
     def _load_user_terms(self, csv_path: str):
         """Load user terms from CSV file."""
@@ -150,10 +91,9 @@ class TerminologyManager:
 
                     if english_term and translation:
                         self.terms[english_term] = translation
-                        self.sources[english_term] = 'user'
                         user_terms_count += 1
 
-                print(f"Loaded {user_terms_count} user terms from {csv_path}")
+                print(f"Loaded {user_terms_count} terms from {csv_path}")
 
         except Exception as e:
             print(f"Error loading user CSV: {e}")
@@ -499,8 +439,5 @@ class TerminologyManager:
         return result
 
     def get_terms_count(self) -> Dict[str, int]:
-        """Get count of terms by source."""
-        counts = {'total': len(self.terms), 'builtin': 0, 'user': 0}
-        for source in self.sources.values():
-            counts[source] += 1
-        return counts
+        """Get count of terms."""
+        return {'total': len(self.terms)}
