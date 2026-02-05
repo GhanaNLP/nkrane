@@ -18,12 +18,14 @@ Standard machine translation often struggles with:
 - **Low-resource languages** - Limited training data for African languages
 
 **Nkrane solves this by:**
-1. You provide a CSV file with your preferred term translations
+1. **You provide a CSV file** with your preferred term translations (required)
 2. Nkrane extracts noun phrases from source text using NLP (spaCy)
 3. Matches them against your terminology dictionary
 4. Replaces content words with placeholders (preserving articles like "a", "the")
 5. Translates with Google Translate
 6. Restores your terminology with proper case preservation and sentence capitalization
+
+**You control the terminology. Google Translate handles the grammar.**
 
 ---
 
@@ -80,22 +82,28 @@ translator = NkraneTranslator(
 result = translator.translate("I want to buy a house and a car.")
 print(result['text'])
 # Output: "Mepɛ sɛ metɔ efie ne kaa."
-```
 
-### Without Terminology (Pure Google Translate)
-
-```python
-# Use Google Translate directly without terminology control
-translator = NkraneTranslator(target_lang='ak')
-
-result = translator.translate("I want to buy a house.")
-print(result['text'])
-# Output: Google Translate's default translation
+print(f"Terms replaced: {result['replacements_count']}")
+# Output: Terms replaced: 2
 ```
 
 ### Batch Translation
 
 ```python
+# Create terminology for batch translation
+cat > batch_terms.csv << EOF
+text,text_translated
+house,efie
+car,kaa
+school,sukuu
+student,asuafo
+EOF
+
+translator = NkraneTranslator(
+    target_lang='ak',
+    terminology_source='batch_terms.csv'
+)
+
 texts = [
     "I want to buy a house today.",
     "The car is very fast.",
@@ -105,7 +113,9 @@ texts = [
 results = translator.batch_translate(texts)
 for r in results:
     print(f"{r['original']}")
-    print(f"  → {r['text']}\n")
+    print(f"  → {r['text']}")
+    print(f"  (Replaced {r['replacements_count']} terms)\n")
+```
 ```
 
 ---
@@ -400,23 +410,21 @@ MIT License - see [LICENSE](LICENSE) file.
 ## ⚡ Quick Reference
 
 ```python
-# Minimal setup
-translator = NkraneTranslator(target_lang='ak')
-
-# With custom terminology
+# Basic usage with terminology
 translator = NkraneTranslator(
     target_lang='ak',
     terminology_source='my_terms.csv'
 )
 
-# With different source language
+# Different source language
 translator = NkraneTranslator(
     target_lang='ak',
     src_lang='fr',  # French to Akan
     terminology_source='my_terms.csv'
 )
 
-# Translate
+# Translate and see what was replaced
 result = translator.translate("Your text here")
 print(result['text'])
+print(f"Replaced {result['replacements_count']} terms")
 ```
