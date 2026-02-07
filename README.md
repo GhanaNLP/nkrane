@@ -18,12 +18,14 @@ Standard machine translation often struggles with:
 - **Low-resource languages** - Limited training data for African languages
 
 **Nkrane solves this by:**
-1. You provide a CSV file with your preferred term translations
+1. **You provide a CSV file** with your preferred term translations (required)
 2. Nkrane extracts noun phrases from source text using NLP (spaCy)
 3. Matches them against your terminology dictionary
 4. Replaces content words with placeholders (preserving articles like "a", "the")
 5. Translates with Google Translate
 6. Restores your terminology with proper case preservation and sentence capitalization
+
+**You control the terminology. Google Translate handles the grammar.**
 
 ---
 
@@ -51,9 +53,11 @@ python -m spacy download en_core_web_sm
 ### Step 1: Create Your Terminology CSV
 
 Create a CSV file with your preferred translations:
+Supported header names:
+- **Source**: `text`, `english`, `source`, `term`, `word`
+- **Target**: `text_translated`, `translation`, `target`, `translated`
 
 ```bash
-cat > my_terms.csv << EOF
 text,text_translated
 house,efie
 car,kaa
@@ -62,7 +66,6 @@ station,gyinabea
 school,sukuu
 teacher,okyerɛkyerɛfo
 student,asuafo
-EOF
 ```
 
 ### Step 2: Translate with Your Terminology
@@ -72,7 +75,7 @@ from nkrane_gt import NkraneTranslator
 
 # Initialize with your custom terminology
 translator = NkraneTranslator(
-    target_lang='ak',  # Akan/Twi
+    target_lang='ak',  # Akan/Twi (ak) or Ewe (ee) or Ga (gaa)
     terminology_source='my_terms.csv'
 )
 
@@ -80,22 +83,19 @@ translator = NkraneTranslator(
 result = translator.translate("I want to buy a house and a car.")
 print(result['text'])
 # Output: "Mepɛ sɛ metɔ efie ne kaa."
-```
 
-### Without Terminology (Pure Google Translate)
-
-```python
-# Use Google Translate directly without terminology control
-translator = NkraneTranslator(target_lang='ak')
-
-result = translator.translate("I want to buy a house.")
-print(result['text'])
-# Output: Google Translate's default translation
+print(f"Terms replaced: {result['replacements_count']}")
+# Output: Terms replaced: 2
 ```
 
 ### Batch Translation
 
 ```python
+translator = NkraneTranslator(
+    target_lang='ak',
+    terminology_source='my_terms.csv'
+)
+
 texts = [
     "I want to buy a house today.",
     "The car is very fast.",
@@ -105,7 +105,9 @@ texts = [
 results = translator.batch_translate(texts)
 for r in results:
     print(f"{r['original']}")
-    print(f"  → {r['text']}\n")
+    print(f"  → {r['text']}")
+    print(f"  (Replaced {r['replacements_count']} terms)\n")
+```
 ```
 
 ---
@@ -150,45 +152,6 @@ Output: "Gyinabea no wɔ Accra."
 ---
 
 ## 🛠️ Advanced Usage
-
-### Custom Terminology Format
-
-Your CSV can use various column headers (auto-detected):
-
-**Option 1: Standard headers**
-```csv
-text,text_translated
-house,efie
-car,kaa
-```
-
-**Option 2: Alternative headers**
-```csv
-english,translation
-house,efie
-car,kaa
-```
-
-**Option 3: Any two columns**
-```csv
-source_term,target_term
-house,efie
-car,kaa
-```
-
-Supported header names:
-- **Source**: `text`, `english`, `source`, `term`, `word`
-- **Target**: `text_translated`, `translation`, `target`, `translated`
-
-### Multi-word Terms and Phrases
-
-```csv
-text,text_translated
-big house,efie kɛse
-small car,kaa ketewa
-middle lane,mfimfini kwan
-trading space,aguadibea
-```
 
 ### Detailed Translation Results
 
@@ -261,53 +224,6 @@ Let Google Translate handle:
 
 ---
 
-## 🎓 Example Use Cases
-
-### News Translation
-```python
-# Create terminology for your news domain
-cat > news_terms.csv << EOF
-text,text_translated
-parliament,mmarahyɛ bagua
-minister,ɔsoafoɔ
-president,ɔmampanyin
-election,abatoɔ
-government,aban
-EOF
-
-translator = NkraneTranslator(
-    target_lang='ak',
-    terminology_source='news_terms.csv'
-)
-```
-
-### Educational Content
-```python
-# School-related terminology
-cat > education_terms.csv << EOF
-text,text_translated
-teacher,okyerɛkyerɛfo
-student,asuafo
-classroom,adesuadan
-homework,fie adwuma
-examination,sɔhwɛ
-EOF
-```
-
-### Medical Documentation
-```python
-# Medical terminology
-cat > medical_terms.csv << EOF
-text,text_translated
-hospital,ayaresabea
-doctor,dɔkota
-patient,ɔyarefo
-medicine,aduro
-treatment,ayaresa
-EOF
-```
-
----
 
 ## 🔍 Troubleshooting
 
@@ -400,23 +316,21 @@ MIT License - see [LICENSE](LICENSE) file.
 ## ⚡ Quick Reference
 
 ```python
-# Minimal setup
-translator = NkraneTranslator(target_lang='ak')
-
-# With custom terminology
+# Basic usage with terminology
 translator = NkraneTranslator(
     target_lang='ak',
     terminology_source='my_terms.csv'
 )
 
-# With different source language
+# Different source language
 translator = NkraneTranslator(
     target_lang='ak',
     src_lang='fr',  # French to Akan
     terminology_source='my_terms.csv'
 )
 
-# Translate
+# Translate and see what was replaced
 result = translator.translate("Your text here")
 print(result['text'])
+print(f"Replaced {result['replacements_count']} terms")
 ```
