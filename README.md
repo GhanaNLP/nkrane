@@ -14,6 +14,7 @@ Enhanced machine translation with terminology control using Google Translate.
 
 The supported source language:
 - `en` - English
+
 The supported target languages:
 - `ak` - Akan/Twi
 - `ee` - Ewe
