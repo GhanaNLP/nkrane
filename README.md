@@ -4,11 +4,11 @@ Enhanced machine translation with terminology control using Google Translate.
 
 ### How It Works
 
-- Identifies nouns and noun phrases in your text
-- Checks if they exist in your translated terminologies csv 
-- Substitutes all matched nouns with unique placeholders
-- Sends the text with placeholders to Google Translate for translation
-- Replaces the placeholders in the translated text with your defined translations in your csv 
+1- Identifies nouns and noun phrases in your text
+2- Checks if they exist in your translated terminologies csv 
+3- Substitutes all matched nouns with unique placeholders
+4- Sends the text with placeholders to Google Translate for translation
+5- Replaces the placeholders in the translated text with your defined translations in your csv 
 
 ## Supported Languages
 
